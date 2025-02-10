@@ -82,10 +82,10 @@ function fetcherReducer<T>(
 	}
 }
 
-type UseFetcherProps<T, R = any> = {
+type UseFetcherProps<T> = {
 	fetchKey: Array<unknown>;
-	fetchFn: (key?: Array<unknown>, params?: unknown) => Promise<T>;
-	transform?: (response: R | unknown) => T;
+	fetchFn: (key: Array<unknown>, params?: unknown) => Promise<T>;
+	transform?: (response: T) => unknown;
 	initial?: boolean;
 	initialData?: T;
 	enabled?: boolean;
@@ -157,8 +157,9 @@ export default function useFetcher<T = any>(props: UseFetcherProps<T>) {
 			firstMount.current = false;
 		}
 		const newKey = modifyKey(fetchKey);
-		if (!firstMount.current && oldKey.current !== newKey) {
+		if (oldKey.current !== newKey) {
 			fetcher();
+			oldKey.current = newKey;
 		}
 	}, [enabled, fetchKey, fetcher, initial]);
 
